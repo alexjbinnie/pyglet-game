@@ -5,83 +5,74 @@ with either calls.
 """
 import pyglet
 
-import pygletreactor
+from source import pygletreactor
+from source.game import *
+from source.ship import *
+from source.planet import *
+from source.packets import *
 
-import numpy as np
-
-pygletreactor.install()  # <- this must come before...
-from twisted.internet import reactor, task  # <- ...importing this reactor!
+pygletreactor.install()  # Must be installed before importing reactor from twisted.internet
+from twisted.internet import reactor, task, protocol
 
 # Create a Pyglet window with a simple message
 window = pyglet.window.Window(fullscreen=False)
 
+# Set resource path
 pyglet.resource.path = ["resources"]
 pyglet.resource.reindex()
 
-from source.game import *
-
-from source.ship import *
-from source.planet import *
-
+# Establish to the game that this is the Client
 Game().Server = False
 Game().Client = True
 
+# Set the initial game size (will be resized on connection to server)
 Game().width = window.width;
 Game().height = window.height;
 
+# Input handling
+# TODO: Needs reworking
 Game.keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(Game.keys)
-
 keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
 
+# The main drawing loop of pyglet
 @window.event
 def on_draw():
     window.clear()
-    for bullet in Game().bullets:
-        bullet.draw()
-    for ship in Game().ships:
-        ship.draw()
-    for planet in Game().planets:
-        planet.draw()
+    Game().draw()
+
+
+# The main update loop in pyglet
+def update(dt):
+    Game().dt = dt
+    Game().update(dt)
+
+# Schedule the update loop to run at 60 FPS
+pyglet.clock.schedule_interval(update, 1.0 / 60.0)
 
 
 @window.event
 def on_close():
     reactor.callFromThread(reactor.stop)
-
-    # Return true to ensure that no other handlers
-    # on the stack receive the on_close event
+    # Return true to ensure that no other handlers on the stack receive the on_close event
     return True
 
+# Handle key presses
 @window.event
 def on_key_press(symbol, modifiers):
     for ship in Game().ships:
         ship.on_key_press(symbol, modifiers)
 
+# Handle key releases
 @window.event
 def on_key_release(symbol, modifiers):
     for ship in Game().ships:
         ship.on_key_release(symbol, modifiers)
 
 
-# Schedule a function call in Pyglet
-def update(dt):
-    Game().dt = dt
-    Game().update(dt)
-
-pyglet.clock.schedule_interval(update, 1.0 / 60.0)
-
-
-# Schedule a function call in Twisted
-
-
-from twisted.internet import protocol
-from twisted.protocols import basic, amp
-
-from source.packets import *
-
-class DataForwardingProtocol(amp.AMP):
+# Client Protocol
+class ClientAMPProtocol(amp.AMP):
     def __init__(self):
         self.output = None
         self._ship = None
@@ -195,7 +186,7 @@ class DataForwardingProtocol(amp.AMP):
 
 class ClientFactory(protocol.ClientFactory):
     def __init__(self):
-        self.protocol = DataForwardingProtocol
+        self.protocol = ClientAMPProtocol
 
     def clientConnectionLost(self, transport, reason):
         print("Client Connection Lost")

@@ -40,6 +40,14 @@ class Game(metaclass = Singleton):
         for bullet in self.bullets:
             bullet.update(dt)
 
+    def draw(self):
+        for bullet in self.bullets:
+            bullet.draw()
+        for ship in self.ships:
+            ship.draw()
+        for planet in self.planets:
+            planet.draw()
+
     def random_spawn(self):
         spawns_dist = [(spawn, sum([np.linalg.norm(spawn._position - ship._position) for ship in self.ships])) for spawn in self.spawns]
         spawns_dist.sort(key=lambda x: x[1]);
