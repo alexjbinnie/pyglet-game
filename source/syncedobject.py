@@ -1,4 +1,4 @@
-from source.game import *
+from .game import Game
 
 
 class SyncedObject:

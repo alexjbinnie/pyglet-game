@@ -1,6 +1,10 @@
-from source.bullet import *
-from source.game import *
-from source.packets import *
+import pyglet
+import numpy as np
+import random
+from .game import Game
+from .body import Body
+from .syncedobject import SyncedObject
+from .packets import PacketShip, PacketShipInput, PacketShipFire, PacketShipUpdate
 
 
 class Ship(Body, SyncedObject):
@@ -133,9 +137,9 @@ class Ship(Body, SyncedObject):
             self._sound_fire.play()
         if Game().Server:
             if self._laser > 0:
-                Game().bullets.append(Bullet(position=self._position + self.forward() * 24.0,
+                Game().add_bullet(position=self._position + self.forward() * 24.0,
                                              velocity=self._velocity + self.forward() * (50 + 200 * self._laser),
-                                             traillength=50, damage=0.7, color=self._color))
+                                             traillength=50, damage=0.7, color=self._color)
                 self._laser = -0.5
 
     def on_hit(self, bullet):

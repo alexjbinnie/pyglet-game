@@ -1,18 +1,15 @@
-"""A simple example of Pyglet/Twisted integration. A Pyglet window
-is displayed, and both Pyglet and Twisted are making scheduled calls
-and regular intervals. Interacting with the window doesn't interfere
-with either calls.
-"""
 import pyglet
-
-from source import pygletreactor
-from source.game import *
+import numpy as np
+import random
+from source.ship import Ship
+from source.game import Game
 from source.packets import *
-from source.planet import *
-from source.ship import *
+import source.pygletreactor as pygletreactor
+from source.syncedobject import SyncedObject
 
 pygletreactor.install()  # Must be installed before importing reactor from twisted.internet
 from twisted.internet import reactor, task, protocol
+
 
 # Create a Pyglet window with a simple message
 window = pyglet.window.Window(fullscreen=False)
@@ -105,8 +102,7 @@ class ClientAMPProtocol(amp.AMP):
     @PacketPlanet.responder
     def packetplanet(self, id=None, image=None, radius=None, mass=None, position_x=None, position_y=None):
         # print("Packet Planet")
-        Game().planets.append(
-            Planet(id=id, image=image, radius=radius, mass=mass, position=np.array([position_x, position_y])))
+        Game().add_planet(id=id, image=image, radius=radius, mass=mass, position=np.array([position_x, position_y]))
         return {}
 
     @PacketShip.responder
@@ -151,13 +147,10 @@ class ClientAMPProtocol(amp.AMP):
                         velocity_x=None, velocity_y=None):
         # print("Packet Bullet. ID: " + str(id))
         if id is not None:
-            bullet = Bullet(
-                id=id,
+            Game().add_bullet(id=id,
                 position=np.array([position_x, position_y]),
                 color=(color_r, color_g, color_b),
-                velocity=np.array([velocity_x, velocity_y])
-            );
-            Game().bullets.append(bullet)
+                velocity=np.array([velocity_x, velocity_y]))
 
         return {}
 

@@ -1,6 +1,9 @@
-from source.game import *
-from source.packets import *
-from source.syncedobject import *
+import pyglet
+import numpy as np
+from .body import Body
+from .syncedobject import SyncedObject
+from .packets import PacketBulletNew, PacketBulletUpdate
+from .game import Game
 
 
 class Bullet(Body, SyncedObject):

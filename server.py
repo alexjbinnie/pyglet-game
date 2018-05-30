@@ -1,9 +1,11 @@
 import time
-
+import random
+import pyglet
 from twisted.internet import reactor, protocol
 
-from source.game import *
-from source.syncedobject import *
+from source.game import Game
+from source.syncedobject import SyncedObject
+from source.ship import Ship
 
 Game().Client = False
 Game().Server = True

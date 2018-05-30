@@ -1,3 +1,7 @@
+import numpy as np
+import random
+
+
 class Singleton(type):
     _instances = {}
 
@@ -106,6 +110,13 @@ class Game(metaclass=Singleton):
                 Planet(random_position(), radius=type._size, mass=type._size * type._size * type._size * type._density,
                        image=type._image))
 
+    def add_planet(self, **kwargs):
+        Game().planets.append(Planet(**kwargs))
 
-from source.planet import *
-from source.ship import *
+    def add_bullet(self, **kwargs):
+        Game().bullets.append(Bullet(**kwargs))
+
+
+from source.planet import Planet, PlanetType
+from source.spawn import Spawn
+from source.bullet import Bullet

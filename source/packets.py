@@ -1,6 +1,5 @@
 from twisted.protocols import amp
 
-
 class PacketGameSize(amp.Command):
     requiresAnswer = False
     arguments = [(b'width', amp.Integer()),

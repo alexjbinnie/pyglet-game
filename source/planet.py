@@ -1,5 +1,8 @@
-from source.game import *
-from source.packets import *
+import pyglet
+from .body import Body
+from .syncedobject import SyncedObject
+from .game import Game
+from .packets import PacketPlanet
 
 
 class Planet(Body, SyncedObject):
