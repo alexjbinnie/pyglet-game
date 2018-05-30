@@ -1,5 +1,6 @@
 from source.game import *
 
+
 class SyncedObject:
     id_counter = 0
     objects = {}
@@ -16,18 +17,15 @@ class SyncedObject:
         except KeyError as e:
             pass
 
-
     def __init__(self, id=None, **kwargs):
         if id is None:
-            print("Assigned Synced Object ID...")
-            if Game().Client:
-                print("ERROR: SyncedObject has no ID on client")
             self.id = SyncedObject.id_counter + 1
             SyncedObject.id_counter += 1
+            print(f"Synced Object created with autoassigned ID {self.id}")
         else:
             self.id = id
+            print(f"Synced Object created with ID {self.id}")
 
-        print("Created Synced Object " + str(self.id) + " - " + str(self))
         SyncedObject.objects[self.id] = self
 
         if Game().Server:
@@ -44,4 +42,3 @@ class SyncedObject:
             self.update_connected(client)
         else:
             self.update_sync(client)
-
