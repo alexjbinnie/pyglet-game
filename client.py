@@ -7,9 +7,9 @@ import pyglet
 
 from source import pygletreactor
 from source.game import *
-from source.ship import *
-from source.planet import *
 from source.packets import *
+from source.planet import *
+from source.ship import *
 
 pygletreactor.install()  # Must be installed before importing reactor from twisted.internet
 from twisted.internet import reactor, task, protocol
@@ -36,6 +36,7 @@ window.push_handlers(Game.keys)
 keys = pyglet.window.key.KeyStateHandler()
 window.push_handlers(keys)
 
+
 # The main drawing loop of pyglet
 @window.event
 def on_draw():
@@ -48,6 +49,7 @@ def update(dt):
     Game().dt = dt
     Game().update(dt)
 
+
 # Schedule the update loop to run at 60 FPS
 pyglet.clock.schedule_interval(update, 1.0 / 60.0)
 
@@ -58,11 +60,13 @@ def on_close():
     # Return true to ensure that no other handlers on the stack receive the on_close event
     return True
 
+
 # Handle key presses
 @window.event
 def on_key_press(symbol, modifiers):
     for ship in Game().ships:
         ship.on_key_press(symbol, modifiers)
+
 
 # Handle key releases
 @window.event
@@ -87,30 +91,31 @@ class ClientAMPProtocol(amp.AMP):
                             right=Game().keys[self._ship._input_right],
                             fire=Game().keys[self._ship._input_fire])
 
-
     def connectionMade(self):
         print("Client has Made a Connection")
         self._input_loop = task.LoopingCall(self.input_loop)
-        self._input_loop.start(1/10.0)
+        self._input_loop.start(1 / 10.0)
 
     @PacketGameSize.responder
     def packetgamesize(self, width, height):
-        #print("Packet Game Size:")
+        # print("Packet Game Size:")
         window.set_size(width, height)
         return {}
 
     @PacketPlanet.responder
     def packetplanet(self, id=None, image=None, radius=None, mass=None, position_x=None, position_y=None):
-        #print("Packet Planet")
-        Game().planets.append(Planet(id=id, image=image, radius=radius, mass=mass, position=np.array([position_x, position_y])))
+        # print("Packet Planet")
+        Game().planets.append(
+            Planet(id=id, image=image, radius=radius, mass=mass, position=np.array([position_x, position_y])))
         return {}
 
     @PacketShip.responder
-    def packetship(self, id=None, color_r=None, color_g=None, color_b=None, position_x=None, position_y=None, velocity_x=None, velocity_y=None, rotation=None,
+    def packetship(self, id=None, color_r=None, color_g=None, color_b=None, position_x=None, position_y=None,
+                   velocity_x=None, velocity_y=None, rotation=None,
                    angvelocity=None, isme=None):
         if id is not None and id not in SyncedObject.objects.keys():
             ship = Ship(
-                id = id,
+                id=id,
                 position=np.array([position_x, position_y]),
                 color=(color_r, color_g, color_b),
                 velocity=np.array([velocity_x, velocity_y]),
@@ -120,14 +125,15 @@ class ClientAMPProtocol(amp.AMP):
             if isme:
                 self._ship = ship
             Game().ships.append(ship)
-            ship.set_input(pyglet.window.key.UP, pyglet.window.key.DOWN, pyglet.window.key.LEFT, pyglet.window.key.RIGHT, pyglet.window.key.SPACE)
+            ship.set_input(pyglet.window.key.UP, pyglet.window.key.DOWN, pyglet.window.key.LEFT,
+                           pyglet.window.key.RIGHT, pyglet.window.key.SPACE)
         return {}
 
     @PacketShipUpdate.responder
     def packetshipupdate(self, id=None, position_x=0.0, position_y=0.0,
-                   velocity_x=0.0, velocity_y=0.0, rotation=None,
-                   angvelocity=None, health=None):
-        #print("Packet Ship Update. ID: " + str(id))
+                         velocity_x=0.0, velocity_y=0.0, rotation=None,
+                         angvelocity=None, health=None):
+        # print("Packet Ship Update. ID: " + str(id))
         try:
             ship = SyncedObject.objects[id]
             ship._position = np.array([position_x, position_y])
@@ -138,13 +144,12 @@ class ClientAMPProtocol(amp.AMP):
         except KeyError as e:
             print("no ship with id " + str(id))
 
-
         return {}
 
     @PacketBulletNew.responder
     def packetbulletnew(self, id=None, color_r=None, color_g=None, color_b=None, position_x=None, position_y=None,
-                   velocity_x=None, velocity_y=None):
-        #print("Packet Bullet. ID: " + str(id))
+                        velocity_x=None, velocity_y=None):
+        # print("Packet Bullet. ID: " + str(id))
         if id is not None:
             bullet = Bullet(
                 id=id,
@@ -158,8 +163,8 @@ class ClientAMPProtocol(amp.AMP):
 
     @PacketBulletUpdate.responder
     def packetbulletupdate(self, id=None, position_x=None, position_y=None,
-                         velocity_x=None, velocity_y=None, active=True):
-        #print("Packet Bullet Update. ID: " + str(id))
+                           velocity_x=None, velocity_y=None, active=True):
+        # print("Packet Bullet Update. ID: " + str(id))
         try:
             bullet = SyncedObject.objects[id]
             bullet._position = np.array([position_x, position_y])

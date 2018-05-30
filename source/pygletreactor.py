@@ -5,14 +5,13 @@ See the README for usage information.
 Padraig Kitterick <padraigkitterick@gmail.com>
 """
 
-import pyglet
-
-from twisted.python import log, runtime
-from twisted.internet import _threadedselect
-
 import queue
 
+import pyglet
 from pyglet.app.base import EventLoop
+from twisted.internet import _threadedselect
+from twisted.python import log
+
 pyglet_event_loop = pyglet.app.base.EventLoop
 
 

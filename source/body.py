@@ -1,9 +1,11 @@
 import math
+
 import numpy as np
 
-class Body:
 
-    def __init__(self, position=np.array([0.0, 0.0]), velocity=np.array([0.0, 0.0]), rotation=0.0, drag=0.0, angvelocity=0.0, angdrag = 0.0, **kwargs):
+class Body:
+    def __init__(self, position=np.array([0.0, 0.0]), velocity=np.array([0.0, 0.0]), rotation=0.0, drag=0.0,
+                 angvelocity=0.0, angdrag=0.0, **kwargs):
         self._position = np.array(position)
         self._velocity = np.array(velocity)
         self._rotation = rotation
@@ -19,4 +21,3 @@ class Body:
 
     def forward(self):
         return np.array([math.sin(math.radians(self._rotation)), math.cos(math.radians(self._rotation))])
-

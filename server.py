@@ -1,6 +1,6 @@
-from twisted.internet import reactor, protocol
-from twisted.protocols import basic
 import time
+
+from twisted.internet import reactor, protocol
 
 from source.game import *
 from source.syncedobject import *
@@ -15,22 +15,21 @@ Game().generate()
 
 Game().keys = {}
 
-
-
-from twisted.protocols import amp
-
 from source.packets import *
 
+
 def t():
-    return "["+ time.strftime("%H:%M:%S") +"] "
+    return "[" + time.strftime("%H:%M:%S") + "] "
+
 
 class EchoProtocol(amp.AMP):
     name = "Unnamed"
+
     def connectionMade(self):
-        #self.sendLine(b"Welcome to the server")
+        # self.sendLine(b"Welcome to the server")
         self.factory.clients.append(self)
         self.callRemote(PacketGameSize, width=Game().width, height=Game().height)
-        print(t() + "+ Connection from: "+ self.transport.getPeer().host)
+        print(t() + "+ Connection from: " + self.transport.getPeer().host)
         for planet in Game().planets:
             planet.update_connected(self)
         for ship in Game().ships:
@@ -43,7 +42,8 @@ class EchoProtocol(amp.AMP):
         Game().ships.append(player)
         player.respawn(Game().random_spawn())
         player.update_connected(self)
-        player.set_input(pyglet.window.key.UP, pyglet.window.key.LEFT, pyglet.window.key.RIGHT, pyglet.window.key.DOWN, pyglet.window.key.SPACE)
+        player.set_input(pyglet.window.key.UP, pyglet.window.key.LEFT, pyglet.window.key.RIGHT, pyglet.window.key.DOWN,
+                         pyglet.window.key.SPACE)
         # New syncedobjects automatically synced to all clients
 
     def connectionLost(self, reason):
@@ -60,12 +60,12 @@ class EchoProtocol(amp.AMP):
         del SyncedObject.objects[playership.id]
 
         self.sendMsg("- %s left." % self.name)
-        print(t() + "- Connection lost: "+ self.name)
+        print(t() + "- Connection lost: " + self.name)
         self.factory.clients.remove(self)
 
     @PacketShipInput.responder
     def packetshipinput(self, id=None, up=False, left=False, right=False, down=False, fire=False):
-        #print("Packet Ship Input. ID: " + str(id))
+        # print("Packet Ship Input. ID: " + str(id))
         ship = SyncedObject.objects[id]
         ship._key_up = up
         ship._key_down = down
@@ -83,10 +83,13 @@ class EchoProtocol(amp.AMP):
 
     def sendMsg(self, message):
         pass
- #       for client in self.factory.clients:
-#            client.sendLine(bytes(t() + message, "UTF-8"))
+        #       for client in self.factory.clients:
+
+
+# client.sendLine(bytes(t() + message, "UTF-8"))
 
 from twisted.internet import task
+
 
 class EchoServerFactory(protocol.ServerFactory):
     protocol = EchoProtocol
@@ -94,7 +97,7 @@ class EchoServerFactory(protocol.ServerFactory):
 
     def __init__(self):
         self.updateloop = task.LoopingCall(self.update)
-        self.updateloop.start(1/60.0)
+        self.updateloop.start(1 / 60.0)
         self.syncloop = task.LoopingCall(self.sync)
         self.syncloop.start(1 / 30.0)
 
@@ -112,10 +115,10 @@ class EchoServerFactory(protocol.ServerFactory):
         for bullet in Game().bullets:
             bullet._dirty_creation = False
 
-
     def update(self):
-        Game().dt = 1/60.0
-        Game().update(1/60.0)
+        Game().dt = 1 / 60.0
+        Game().update(1 / 60.0)
+
 
 if __name__ == "__main__":
     reactor.listenTCP(5001, EchoServerFactory())
