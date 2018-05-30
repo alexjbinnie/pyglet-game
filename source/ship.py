@@ -31,9 +31,9 @@ class Ship(Body, SyncedObject):
 
         if Game().Client:
             self._images = [
-                pyglet.resource.image('galpin-0.png'),
-                pyglet.resource.image('galpin-1.png'),
-                pyglet.resource.image('galpin-2.png')
+                pyglet.resource.image('ship1-0.png'),
+                pyglet.resource.image('ship1-1.png'),
+                pyglet.resource.image('ship1-2.png')
             ]
             for image in self._images:
                 image.anchor_x = image.width // 2

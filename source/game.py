@@ -62,10 +62,10 @@ class Game(metaclass=Singleton):
         # types.append(PlanetType(size=40, image="planet-40", density=1))
         # types.append(PlanetType(size=48, image="gasgiant-48", density=1))
 
-        types.append(PlanetType(size=24, image="logan-24", density=1))
-        types.append(PlanetType(size=32, image="logan-32", density=1))
-        types.append(PlanetType(size=40, image="logan-40", density=1))
-        types.append(PlanetType(size=48, image="logan-48", density=1))
+        types.append(PlanetType(size=24, image="planet-24", density=1))
+        types.append(PlanetType(size=32, image="planet-32", density=1))
+        types.append(PlanetType(size=40, image="planet-40", density=1))
+        types.append(PlanetType(size=48, image="gasgiant-48", density=1))
 
         width = self.width
         height = self.height
